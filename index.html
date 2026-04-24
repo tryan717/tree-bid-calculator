@@ -83,11 +83,8 @@ button {
 }
 
 .remove-btn { background: #8b1e1e; }
-
-.print-btn {
-  background: #14532d;
-  margin-bottom: 20px;
-}
+.print-btn { background: #14532d; }
+.def-btn { background: #444; }
 
 .total-box {
   background: #222;
@@ -121,14 +118,10 @@ button {
   margin-top: 4px;
 }
 
-#printArea {
-  display: none;
-}
+#printArea { display: none; }
 
 @media print {
-  @page {
-    margin: 0.5in;
-  }
+  @page { margin: 0.5in; }
 
   body {
     margin: 0;
@@ -182,6 +175,7 @@ button {
 <div id="trees"></div>
 
 <button type="button" onclick="addTree()">+ Add Tree</button>
+<button type="button" class="def-btn" onclick="window.open('definitions.html', '_blank')">View Difficulty Definitions</button>
 
 <div class="card">
   <h3>Fixed Add-Ons</h3>
@@ -201,7 +195,7 @@ button {
     <input type="checkbox" id="excavatorCheck" onchange="calculate()">
     <span class="checkbox-text">Mini Excavator</span>
   </label>
-  <input type="number" id="excavator" value="700" oninput="calculate()">
+  <input type="number" id="excavator" value="500" oninput="calculate()">
 
   <label>Manual Add-On ($)</label>
   <input type="number" id="manual" value="0" oninput="calculate()">
@@ -268,10 +262,10 @@ let trees = [];
 let activeTree = 0;
 
 const sizeOptions = {
-  450: "Small 6–12 in",
-  800: "Medium 13–22 in",
-  1400: "Large 23–32 in",
-  1950: "XL 33+ in"
+  500: "Small 6–12 in",
+  1050: "Medium 13–22 in",
+  1750: "Large 23–32 in",
+  2050: "XL 33+ in"
 };
 
 const canopyOptions = {
@@ -282,20 +276,21 @@ const canopyOptions = {
 };
 
 const difficulties = [
-  { key: "normalRigging", label: "Normal Rigging", value: 0.15 },
+  { key: "normalRigging", label: "Normal Rigging", value: 0.12 },
   { key: "technicalRigging", label: "Technical Rigging", value: 0.25 },
-  { key: "structure", label: "Near Structure/Fence", value: 0.15 },
+  { key: "structure", label: "Near Structure/Fence", value: 0.10 },
   { key: "highRiskStructure", label: "High-Risk Structure/Fence", value: 0.25 },
-  { key: "dead", label: "Dead/Brittle", value: 0.15 },
-  { key: "drop", label: "Poor Drop Zone", value: 0.15 },
-  { key: "access", label: "Bad Access / Long Drag", value: 0.10 },
-  { key: "slope", label: "Steep Terrain", value: 0.10 },
-  { key: "cleanup", label: "Heavy Cleanup / Wood Volume", value: 0.15 }
+  { key: "dead", label: "Dead/Brittle", value: 0.12 },
+  { key: "drop", label: "Poor Drop Zone", value: 0.12 },
+  { key: "access", label: "Bad Access / Long Drag", value: 0.08 },
+  { key: "slope", label: "Steep Terrain", value: 0.08 },
+  { key: "cleanup", label: "Heavy Cleanup / Wood Volume", value: 0.10 },
+  { key: "xlLogs", label: "XL Logs / Oversized Wood", value: 0.10 }
 ];
 
 function addTree() {
   trees.push({
-    size: 1950,
+    size: 2050,
     canopy: 1,
     difficulty: [],
     cap: true,
@@ -334,10 +329,10 @@ function render() {
 
           <label>Tree Size</label>
           <select onchange="updateTree(${i}, 'size', this.value)">
-            <option value="450" ${tree.size == 450 ? "selected" : ""}>Small - 6–12&quot; DBH - $450</option>
-            <option value="800" ${tree.size == 800 ? "selected" : ""}>Medium - 13–22&quot; DBH - $800</option>
-            <option value="1400" ${tree.size == 1400 ? "selected" : ""}>Large - 23–32&quot; DBH - $1,400</option>
-            <option value="1950" ${tree.size == 1950 ? "selected" : ""}>XL - 33&quot;+ DBH - $1,950</option>
+            <option value="500" ${tree.size == 500 ? "selected" : ""}>Small - 6–12&quot; DBH - $500</option>
+            <option value="1050" ${tree.size == 1050 ? "selected" : ""}>Medium - 13–22&quot; DBH - $1,050</option>
+            <option value="1750" ${tree.size == 1750 ? "selected" : ""}>Large - 23–32&quot; DBH - $1,750</option>
+            <option value="2050" ${tree.size == 2050 ? "selected" : ""}>XL - 33&quot;+ DBH - $2,050</option>
           </select>
 
           <label>Canopy Size</label>
