@@ -23,7 +23,6 @@ h2, h3, h4 { margin: 0 0 10px; }
   padding: 14px;
   margin-bottom: 12px;
   border-radius: 12px;
-  box-shadow: 0 1px 4px rgba(0,0,0,.12);
 }
 
 .tree-summary {
@@ -40,53 +39,34 @@ label {
 }
 
 select,
-input[type="number"] {
+input {
   width: 100%;
   padding: 10px;
   margin-top: 5px;
-  border: 1px solid #bbb;
   border-radius: 8px;
-  font-size: 16px;
 }
 
 .checkbox-row {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 9px 0;
-  border-bottom: 1px solid #eee;
-  font-weight: normal;
-  margin-top: 0;
+  padding: 8px 0;
 }
 
-.checkbox-row input {
-  width: 22px;
-  height: 22px;
-  flex-shrink: 0;
-}
-
-.checkbox-text {
-  flex: 1;
-  font-size: 15px;
-}
+.checkbox-text { flex: 1; }
 
 button {
   width: 100%;
   padding: 12px;
   margin-top: 8px;
-  border: none;
   border-radius: 10px;
   background: #222;
   color: white;
-  font-size: 16px;
-  font-weight: bold;
+  border: none;
 }
-
-.remove-btn { background: #8b1e1e; }
 
 .print-btn {
   background: #14532d;
-  margin-bottom: 20px;
 }
 
 .total-box {
@@ -94,71 +74,39 @@ button {
   color: white;
   padding: 16px;
   border-radius: 12px;
-  margin: 12px 0 20px;
+  margin-bottom: 15px;
   text-align: center;
-}
-
-.total {
-  font-size: 28px;
+  font-size: 26px;
   font-weight: bold;
 }
 
-.small {
-  font-size: 13px;
-  color: #666;
-  margin-top: 8px;
-  line-height: 1.4;
-}
+#printArea { display: none; }
 
-.summary-line {
-  font-weight: bold;
-  font-size: 16px;
-}
-
-.summary-sub {
-  color: #666;
-  font-size: 13px;
-  margin-top: 4px;
-}
-
-#printArea {
-  display: none;
-}
-
+/* PRINT FIX */
 @media print {
-  body * {
-    visibility: hidden;
-  }
+  @page { margin: 0.5in; }
 
-  #printArea,
-  #printArea * {
-    visibility: visible;
+  body > *:not(#printArea) {
+    display: none !important;
   }
 
   #printArea {
-    display: block;
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    padding: 30px;
-    background: white;
-    color: #222;
-  }
-
-  .print-section {
-    margin-top: 22px;
+    display: block !important;
+    position: static !important;
+    width: auto;
+    padding: 0;
+    margin: 0;
   }
 
   .print-tree {
+    padding: 8px 0;
     border-bottom: 1px solid #ccc;
-    padding: 10px 0;
+    page-break-inside: avoid;
   }
 
-  .print-total {
-    font-size: 28px;
-    font-weight: bold;
-    margin-top: 20px;
+  .print-section {
+    margin-top: 16px;
+    page-break-inside: avoid;
   }
 }
 </style>
@@ -168,400 +116,190 @@ button {
 
 <h2>Tree Bid Calculator</h2>
 
-<div class="total-box">
-  <div class="total" id="finalTotal">$0</div>
-</div>
+<div class="total-box" id="finalTotal">$0</div>
 
 <div id="trees"></div>
 
-<button type="button" onclick="addTree()">+ Add Tree</button>
+<button onclick="addTree()">+ Add Tree</button>
 
 <div class="card">
-  <h3>Fixed Add-Ons</h3>
+<h3>Fixed Add-Ons</h3>
 
-  <label class="checkbox-row">
-    <input type="checkbox" id="climber" onchange="calculate()">
-    <span class="checkbox-text">Two Climbers (+$600)</span>
-  </label>
+<label class="checkbox-row">
+<input type="checkbox" id="climber" onchange="calculate()">
+<span class="checkbox-text">Two Climbers (+$600)</span>
+</label>
 
-  <label class="checkbox-row">
-    <input type="checkbox" id="craneCheck" onchange="calculate()">
-    <span class="checkbox-text">Crane</span>
-  </label>
-  <input type="number" id="crane" value="1500" oninput="calculate()">
+<label class="checkbox-row">
+<input type="checkbox" id="craneCheck" onchange="calculate()">
+<span class="checkbox-text">Crane</span>
+</label>
+<input type="number" id="crane" value="1500" oninput="calculate()">
 
-  <label class="checkbox-row">
-    <input type="checkbox" id="excavatorCheck" onchange="calculate()">
-    <span class="checkbox-text">Mini Excavator</span>
-  </label>
-  <input type="number" id="excavator" value="700" oninput="calculate()">
+<label class="checkbox-row">
+<input type="checkbox" id="excavatorCheck" onchange="calculate()">
+<span class="checkbox-text">Mini Excavator</span>
+</label>
+<input type="number" id="excavator" value="700" oninput="calculate()">
 
-  <label>Manual Add-On ($)</label>
-  <input type="number" id="manual" value="0" oninput="calculate()">
+<input type="number" id="manual" value="0" oninput="calculate()" placeholder="Manual Add ($)">
 </div>
 
 <div class="card">
-  <h3>Minimum Job Price</h3>
+<h3>Minimum Price</h3>
 
-  <label class="checkbox-row">
-    <input type="checkbox" id="minimumCheck" checked onchange="calculate()">
-    <span class="checkbox-text">Apply Minimum Price</span>
-  </label>
+<label class="checkbox-row">
+<input type="checkbox" id="minimumCheck" checked onchange="calculate()">
+<span>Apply Minimum</span>
+</label>
 
-  <label>Minimum Amount ($)</label>
-  <input type="number" id="minimumPrice" value="600" oninput="calculate()">
+<input type="number" id="minimumPrice" value="600" oninput="calculate()">
 </div>
 
 <div class="card">
-  <h3>Discounts</h3>
+<h3>Discounts</h3>
 
-  <label>No Haul-Off Discount (%)</label>
-  <select id="nohaul" onchange="calculate()">
-    <option value="0" selected>0%</option>
-    <option value="10">10%</option>
-    <option value="12">12%</option>
-    <option value="15">15%</option>
-    <option value="20">20%</option>
-  </select>
+<select id="nohaul" onchange="calculate()">
+<option value="0">No Haul-Off 0%</option>
+<option value="10">10%</option>
+<option value="12">12%</option>
+<option value="15">15%</option>
+</select>
 
-  <label>Cash Discount (%)</label>
-  <select id="cash" onchange="calculate()">
-    <option value="0" selected>0%</option>
-    <option value="3">3%</option>
-    <option value="5">5%</option>
-    <option value="7">7%</option>
-    <option value="10">10%</option>
-  </select>
+<select id="cash" onchange="calculate()">
+<option value="0">Cash 0%</option>
+<option value="3">3%</option>
+<option value="5">5%</option>
+</select>
 
-  <label>Returning Customer Discount ($)</label>
-  <select id="returning" onchange="calculate()">
-    <option value="0" selected>$0</option>
-    <option value="50">$50</option>
-    <option value="100">$100</option>
-    <option value="150">$150</option>
-    <option value="200">$200</option>
-  </select>
+<select id="returning" onchange="calculate()">
+<option value="0">$0 Returning</option>
+<option value="100">$100</option>
+</select>
 
-  <label>Multi-Tree Discount (%)</label>
-  <select id="multiTreeDiscount" onchange="calculate()">
-    <option value="0" selected>0%</option>
-    <option value="3">3%</option>
-    <option value="5">5%</option>
-    <option value="7">7%</option>
-    <option value="10">10%</option>
-  </select>
+<select id="multiTreeDiscount" onchange="calculate()">
+<option value="0">Multi Tree 0%</option>
+<option value="5">5%</option>
+<option value="10">10%</option>
+</select>
+
 </div>
 
-<button type="button" class="print-btn" onclick="printEstimate()">Print Estimate</button>
+<button class="print-btn" onclick="printEstimate()">Print Estimate</button>
 
 <div id="printArea"></div>
 
 <script>
-let trees = [];
-let activeTree = 0;
+let trees=[];
+let activeTree=0;
 
-const sizeOptions = {
-  450: "Small 6–12 in",
-  800: "Medium 13–22 in",
-  1400: "Large 23–32 in",
-  1950: "XL 33+ in"
+const sizes={
+450:"Small",
+800:"Medium",
+1400:"Large",
+1950:"XL"
 };
 
-const canopyOptions = {
-  1: "Light",
-  1.1: "Medium",
-  1.2: "Large",
-  1.35: "XL"
-};
+const canopy={1:"Light",1.2:"Large"};
 
-const difficulties = [
-  { key: "normalRigging", label: "Normal Rigging", value: 0.15 },
-  { key: "technicalRigging", label: "Technical Rigging", value: 0.25 },
-  { key: "structure", label: "Near Structure/Fence", value: 0.15 },
-  { key: "highRiskStructure", label: "High-Risk Structure/Fence", value: 0.25 },
-  { key: "dead", label: "Dead/Brittle", value: 0.15 },
-  { key: "drop", label: "Poor Drop Zone", value: 0.15 },
-  { key: "access", label: "Bad Access / Long Drag", value: 0.10 },
-  { key: "slope", label: "Steep Terrain", value: 0.10 },
-  { key: "cleanup", label: "Heavy Cleanup / Wood Volume", value: 0.15 }
+const diff=[
+{key:"normalRig",label:"Normal Rigging",val:.15},
+{key:"techRig",label:"Technical Rigging",val:.25},
+{key:"struct",label:"Structure",val:.15},
+{key:"highStruct",label:"High Risk Structure",val:.25}
 ];
 
-function addTree() {
-  trees.push({
-    size: 1950,
-    canopy: 1,
-    difficulty: [],
-    cap: true,
-    customCap: 6000,
-    total: 0,
-    raw: 0
-  });
-
-  activeTree = trees.length - 1;
-  render();
+function addTree(){
+trees.push({size:1950,can:1,d:[]});
+activeTree=trees.length-1;
+render();
 }
 
-function render() {
-  const container = document.getElementById("trees");
-  container.innerHTML = "";
+function render(){
+let html="";
+trees.forEach((t,i)=>{
+calcTree(t);
+html+=`<div class="card tree-summary ${i===activeTree?"active":""}" onclick="activeTree=${i};render()">
+Tree ${i+1} - $${Math.round(t.total)}
+</div>`;
 
-  trees.forEach((tree, i) => {
-    calculateTree(tree);
-    const isActive = i === activeTree;
+if(i===activeTree){
+html+=`<div class="card">
+<select onchange="t.size=this.value;render()">
+<option value="450">Small</option>
+<option value="800">Medium</option>
+<option value="1400">Large</option>
+<option value="1950" selected>XL</option>
+</select>
 
-    container.innerHTML += `
-      <div class="card tree-summary ${isActive ? "active" : ""}" onclick="setActiveTree(${i})">
-        <div class="summary-line">
-          Tree ${i + 1} — ${sizeOptions[tree.size]} / ${canopyOptions[tree.canopy]} Canopy — $${Math.round(tree.total)}
-        </div>
-        <div class="summary-sub">
-          ${isActive ? "Editing this tree" : "Tap to edit"}
-        </div>
-      </div>
-    `;
+${diff.map(d=>`
+<label class="checkbox-row">
+<input type="checkbox" ${t.d.includes(d.key)?"checked":""}
+onchange="toggle(${i},'${d.key}',this.checked)">
+${d.label}
+</label>`).join("")}
+</div>`;
+}
+});
 
-    if (isActive) {
-      container.innerHTML += `
-        <div class="card">
-          <h3>Edit Tree ${i + 1}</h3>
-
-          <label>Tree Size</label>
-          <select onchange="updateTree(${i}, 'size', this.value)">
-            <option value="450" ${tree.size == 450 ? "selected" : ""}>Small - 6–12&quot; DBH - $450</option>
-            <option value="800" ${tree.size == 800 ? "selected" : ""}>Medium - 13–22&quot; DBH - $800</option>
-            <option value="1400" ${tree.size == 1400 ? "selected" : ""}>Large - 23–32&quot; DBH - $1,400</option>
-            <option value="1950" ${tree.size == 1950 ? "selected" : ""}>XL - 33&quot;+ DBH - $1,950</option>
-          </select>
-
-          <label>Canopy Size</label>
-          <select onchange="updateTree(${i}, 'canopy', this.value)">
-            <option value="1" ${tree.canopy == 1 ? "selected" : ""}>Light +0%</option>
-            <option value="1.1" ${tree.canopy == 1.1 ? "selected" : ""}>Medium +10%</option>
-            <option value="1.2" ${tree.canopy == 1.2 ? "selected" : ""}>Large +20%</option>
-            <option value="1.35" ${tree.canopy == 1.35 ? "selected" : ""}>XL +35%</option>
-          </select>
-
-          <h4>Difficulty Add-Ons</h4>
-          ${renderDifficultyRows(tree, i)}
-
-          <h4>Price Cap</h4>
-          <label class="checkbox-row">
-            <input type="checkbox" ${tree.cap ? "checked" : ""} onchange="toggleCap(${i}, this.checked)">
-            <span class="checkbox-text">Cap Tree Price</span>
-          </label>
-
-          <label>Cap Amount ($)</label>
-          <input type="number" value="${tree.customCap}" oninput="updateTree(${i}, 'customCap', this.value)">
-
-          <div class="small">
-            Tree Total: $${Math.round(tree.total)}<br>
-            Raw Calculation: $${Math.round(tree.raw)}
-            ${tree.cap && tree.raw > tree.customCap ? "<br>Cap Applied" : ""}
-          </div>
-
-          ${trees.length > 1 ? `<button type="button" class="remove-btn" onclick="removeTree(${i})">Remove Tree</button>` : ""}
-        </div>
-      `;
-    }
-  });
-
-  calculate();
+trees.innerHTML=html;
+calculate();
 }
 
-function renderDifficultyRows(tree, i) {
-  return difficulties.map(diff => `
-    <label class="checkbox-row">
-      <input 
-        type="checkbox" 
-        ${tree.difficulty.includes(diff.key) ? "checked" : ""}
-        onchange="toggleDifficulty(${i}, '${diff.key}', this.checked)"
-      >
-      <span class="checkbox-text">${diff.label} (+${Math.round(diff.value * 100)}%)</span>
-    </label>
-  `).join("");
+function toggle(i,k,c){
+if(c){
+if(k==="normalRig") trees[i].d=trees[i].d.filter(x=>x!=="techRig");
+if(k==="techRig") trees[i].d=trees[i].d.filter(x=>x!=="normalRig");
+if(k==="struct") trees[i].d=trees[i].d.filter(x=>x!=="highStruct");
+if(k==="highStruct") trees[i].d=trees[i].d.filter(x=>x!=="struct");
+
+trees[i].d.push(k);
+}else{
+trees[i].d=trees[i].d.filter(x=>x!==k);
+}
+render();
 }
 
-function setActiveTree(i) {
-  activeTree = i;
-  render();
+function calcTree(t){
+let base=t.size;
+let pct=t.d.reduce((a,k)=>a+diff.find(d=>d.key===k).val,0);
+t.total=base*(1+pct);
 }
 
-function updateTree(i, key, value) {
-  trees[i][key] = Number(value);
-  render();
+function calculate(){
+let total=trees.reduce((s,t)=>s+t.total,0);
+
+if(climber.checked) total+=600;
+if(craneCheck.checked) total+=+crane.value;
+if(excavatorCheck.checked) total+=+excavator.value;
+
+total+=+manual.value;
+
+total*=1-nohaul.value/100;
+total*=1-cash.value/100;
+total*=1-multiTreeDiscount.value/100;
+total-=+returning.value;
+
+if(minimumCheck.checked && total<minimumPrice.value) total=minimumPrice.value;
+
+finalTotal.innerHTML="$"+Math.round(total);
+return total;
 }
 
-function toggleDifficulty(i, key, checked) {
-  if (checked) {
-    if (key === "normalRigging") {
-      trees[i].difficulty = trees[i].difficulty.filter(item => item !== "technicalRigging");
-    }
+function printEstimate(){
+let total=calculate();
 
-    if (key === "technicalRigging") {
-      trees[i].difficulty = trees[i].difficulty.filter(item => item !== "normalRigging");
-    }
+let html=`<h1>Estimate</h1>`;
 
-    if (key === "structure") {
-      trees[i].difficulty = trees[i].difficulty.filter(item => item !== "highRiskStructure");
-    }
+trees.forEach((t,i)=>{
+html+=`<div class="print-tree">Tree ${i+1}: $${Math.round(t.total)}</div>`;
+});
 
-    if (key === "highRiskStructure") {
-      trees[i].difficulty = trees[i].difficulty.filter(item => item !== "structure");
-    }
+html+=`<div class="print-section"><strong>Total: $${Math.round(total)}</strong></div>`;
 
-    if (!trees[i].difficulty.includes(key)) {
-      trees[i].difficulty.push(key);
-    }
-  } else {
-    trees[i].difficulty = trees[i].difficulty.filter(item => item !== key);
-  }
+printArea.innerHTML=html;
 
-  render();
-}
-
-function toggleCap(i, checked) {
-  trees[i].cap = checked;
-  render();
-}
-
-function removeTree(i) {
-  trees.splice(i, 1);
-  if (activeTree >= trees.length) activeTree = trees.length - 1;
-  if (activeTree < 0) activeTree = 0;
-  render();
-}
-
-function calculateTree(tree) {
-  const base = tree.size * tree.canopy;
-
-  const difficultyPercent = tree.difficulty.reduce((sum, key) => {
-    const found = difficulties.find(d => d.key === key);
-    return sum + (found ? found.value : 0);
-  }, 0);
-
-  const raw = base * (1 + difficultyPercent);
-  const finalTree = tree.cap ? Math.min(raw, tree.customCap) : raw;
-
-  tree.raw = raw;
-  tree.total = finalTree;
-
-  return finalTree;
-}
-
-function calculate() {
-  let total = 0;
-
-  trees.forEach(tree => {
-    total += calculateTree(tree);
-  });
-
-  if (document.getElementById("climber").checked) total += 600;
-  if (document.getElementById("craneCheck").checked) total += Number(document.getElementById("crane").value || 0);
-  if (document.getElementById("excavatorCheck").checked) total += Number(document.getElementById("excavator").value || 0);
-
-  total += Number(document.getElementById("manual").value || 0);
-
-  const noHaul = Number(document.getElementById("nohaul").value || 0);
-  const cash = Number(document.getElementById("cash").value || 0);
-  const returning = Number(document.getElementById("returning").value || 0);
-  const multiTreeDiscount = Number(document.getElementById("multiTreeDiscount").value || 0);
-
-  total *= (1 - noHaul / 100);
-  total *= (1 - cash / 100);
-  total *= (1 - multiTreeDiscount / 100);
-  total -= returning;
-
-  if (total < 0) total = 0;
-
-  if (document.getElementById("minimumCheck").checked) {
-    const minimumPrice = Number(document.getElementById("minimumPrice").value || 0);
-    if (total < minimumPrice) total = minimumPrice;
-  }
-
-  document.getElementById("finalTotal").innerHTML = "$" + Math.round(total);
-  return total;
-}
-
-function money(value) {
-  return "$" + Math.round(Number(value || 0));
-}
-
-function buildPrintEstimate() {
-  const total = calculate();
-
-  const climberAdd = document.getElementById("climber").checked ? 600 : 0;
-  const craneAdd = document.getElementById("craneCheck").checked ? Number(document.getElementById("crane").value || 0) : 0;
-  const excavatorAdd = document.getElementById("excavatorCheck").checked ? Number(document.getElementById("excavator").value || 0) : 0;
-  const manualAdd = Number(document.getElementById("manual").value || 0);
-
-  const noHaul = Number(document.getElementById("nohaul").value || 0);
-  const cash = Number(document.getElementById("cash").value || 0);
-  const returning = Number(document.getElementById("returning").value || 0);
-  const multiTreeDiscount = Number(document.getElementById("multiTreeDiscount").value || 0);
-
-  let html = `
-    <h1>Tree Removal Estimate</h1>
-    <p><strong>Sticks 'N Stones Tree and Grading</strong></p>
-
-    <div class="print-section">
-      <h2>Tree Details</h2>
-  `;
-
-  trees.forEach((tree, index) => {
-    const selectedDifficulties = tree.difficulty.map(key => {
-      const found = difficulties.find(d => d.key === key);
-      return found ? `${found.label} (+${Math.round(found.value * 100)}%)` : "";
-    }).filter(Boolean).join("<br>");
-
-    html += `
-      <div class="print-tree">
-        <strong>Tree ${index + 1}</strong><br>
-        Size: ${sizeOptions[tree.size]}<br>
-        Canopy: ${canopyOptions[tree.canopy]}<br>
-        Difficulties:<br>
-        ${selectedDifficulties || "None"}<br>
-        Raw Tree Price: ${money(tree.raw)}<br>
-        Tree Total: ${money(tree.total)}
-      </div>
-    `;
-  });
-
-  html += `
-    </div>
-
-    <div class="print-section">
-      <h2>Fixed Add-Ons</h2>
-      Two Climbers: ${money(climberAdd)}<br>
-      Crane: ${money(craneAdd)}<br>
-      Mini Excavator: ${money(excavatorAdd)}<br>
-      Manual Add-On: ${money(manualAdd)}
-    </div>
-
-    <div class="print-section">
-      <h2>Discounts</h2>
-      No Haul-Off Discount: ${noHaul}%<br>
-      Cash Discount: ${cash}%<br>
-      Multi-Tree Discount: ${multiTreeDiscount}%<br>
-      Returning Customer Discount: ${money(returning)}
-    </div>
-
-    <div class="print-section">
-      <h2>Final Estimate</h2>
-      <div class="print-total">${money(total)}</div>
-    </div>
-
-    <p style="margin-top:35px; font-size:13px; color:#555;">
-      This estimate is based on visible site conditions and selected scope.
-      Final price may change if job scope, access, hauling, equipment needs, or site conditions change.
-    </p>
-  `;
-
-  document.getElementById("printArea").innerHTML = html;
-}
-
-function printEstimate() {
-  buildPrintEstimate();
-  window.print();
+window.print();
 }
 
 addTree();
